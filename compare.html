@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Side-by-side comparison of polynomial addition algorithms using linked lists: Two-pointer, Nested-loop, and Insertion.">
+  <title>Compare Approaches | Polynomial Addition Visualizer</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="css/tokens.css?v=2.2">
+  <link rel="stylesheet" href="css/base.css?v=2.2">
+  <link rel="stylesheet" href="css/components.css?v=2.2">
+  <link rel="stylesheet" href="css/visualizer.css?v=2.2">
+</head>
+<body>
+  <header class="site-header" role="banner"></header>
+
+  <main class="container visualizer-page" id="main-content">
+    <!-- Streamlined Input Panel -->
+    <section class="input-panel card" aria-labelledby="compare-heading">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--space-2);">
+        <h1 id="compare-heading" style="font-size: 1.25rem; font-weight: 700; letter-spacing: -0.2px;">Three-Way Algorithm Comparison Studio</h1>
+        <div style="display: flex; gap: var(--space-2); align-items: center;">
+          <label class="checkbox-pill" title="Enable cursor optimisation for insertion approach">
+            <input type="checkbox" id="compare-cursor-opt">
+            <span>Cursor opt (Insertion)</span>
+          </label>
+          <button type="button" id="compare-btn-run" class="btn btn-primary btn-sm">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+            <span>Run All Three</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Dual Input Grid -->
+      <div class="input-dual-grid" style="margin-top: 4px;">
+        <div class="input-field-group">
+          <div class="field-header">
+            <label for="compare-input-p" class="field-label">
+              <span class="poly-badge poly-badge-p">P</span>
+              <span>Polynomial P(x)</span>
+            </label>
+          </div>
+          <input type="text" id="compare-input-p" class="text-input" spellcheck="false" autocomplete="off">
+          <div id="compare-message-p" class="field-message" aria-live="polite"></div>
+        </div>
+
+        <div class="input-field-group">
+          <div class="field-header">
+            <label for="compare-input-q" class="field-label">
+              <span class="poly-badge poly-badge-q">Q</span>
+              <span>Polynomial Q(x)</span>
+            </label>
+          </div>
+          <input type="text" id="compare-input-q" class="text-input" spellcheck="false" autocomplete="off">
+          <div id="compare-message-q" class="field-message" aria-live="polite"></div>
+        </div>
+      </div>
+
+      <!-- Ribbon -->
+      <div class="input-ribbon" style="padding-top: var(--space-2);">
+        <div class="ribbon-helpers" style="margin-left: 0;">
+          <select id="compare-preset-select" class="select-input" aria-label="Select preset polynomial">
+            <option value="">Choose Preset...</option>
+          </select>
+          <div class="btn-group">
+            <button type="button" id="compare-btn-random" class="btn btn-secondary btn-sm">Random</button>
+            <button type="button" id="compare-btn-swap" class="btn btn-secondary btn-sm">Swap</button>
+            <button type="button" id="compare-btn-clear" class="btn btn-secondary btn-sm">Clear</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Shared Playback Controls Deck -->
+    <section class="transport-deck card" aria-label="Shared Playback Controls">
+      <div class="transport-btn-group">
+        <button type="button" id="btn-restart" class="btn btn-icon" title="Restart (Home)" aria-label="Restart from step 0">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="19,20 9,12 19,4"></polygon><line x1="5" y1="4" x2="5" y2="20" stroke="currentColor" stroke-width="2"></line></svg>
+        </button>
+        <button type="button" id="btn-prev" class="btn btn-icon" title="Step Back (Left Arrow)" aria-label="Step backward">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="19,19 7,12 19,5"></polygon></svg>
+        </button>
+        <button type="button" id="btn-play-pause" class="btn btn-primary transport-play-btn" title="Play / Pause (Space)" aria-label="Start playback">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"></polygon></svg>
+          <span>Play</span>
+        </button>
+        <button type="button" id="btn-next" class="btn btn-icon" title="Step Forward (Right Arrow)" aria-label="Step forward">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,5 17,12 5,19"></polygon></svg>
+        </button>
+        <button type="button" id="btn-end" class="btn btn-icon" title="Jump to End (End)" aria-label="Jump to finish">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,4 15,12 5,20"></polygon><line x1="19" y1="4" x2="19" y2="20" stroke="currentColor" stroke-width="2"></line></svg>
+        </button>
+      </div>
+
+      <div class="scrubber-deck">
+        <input type="range" id="step-scrubber" class="step-scrubber" min="0" max="0" value="0" aria-label="Master step scrubber">
+        <span id="step-indicator" class="step-indicator">Step 0 / 0</span>
+      </div>
+
+      <div class="transport-options">
+        <div class="segmented-control" role="group" aria-label="Playback speed selector">
+          <button type="button" class="speed-btn" data-speed="0.25">0.25x</button>
+          <button type="button" class="speed-btn" data-speed="0.5">0.5x</button>
+          <button type="button" class="speed-btn active" data-speed="1.0">1x</button>
+          <button type="button" class="speed-btn" data-speed="2.0">2x</button>
+          <button type="button" class="speed-btn" data-speed="4.0">4x</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Three Side-by-Side Algorithm Studio Columns -->
+    <div class="compare-grid">
+      <!-- 1 Two-pointer -->
+      <section class="compare-card card" aria-label="Two-pointer Approach">
+        <div class="compare-header" style="border-top: 3px solid #6366F1;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span class="poly-badge poly-badge-p">1</span>
+            <span>Two-pointer Traversal</span>
+          </div>
+          <span id="tp-phase-badge" class="badge badge-scan">Scan</span>
+        </div>
+        <div class="compare-viewport">
+          <div id="tp-row-p" style="min-height: 65px;"></div>
+          <div id="tp-row-q" style="min-height: 65px;"></div>
+          <div id="tp-row-r" style="min-height: 65px;"></div>
+        </div>
+        <div style="padding: 8px 12px; font-size: 0.8rem; border-top: 1px solid var(--border); min-height: 38px; color: var(--text-secondary); background: var(--surface-raised);" id="tp-narration"></div>
+        <div style="padding: 6px 12px; background: var(--surface); border-top: 1px solid var(--border-subtle); font-size: 0.75rem; font-weight: 700; font-family: var(--font-mono); color: var(--accent);" id="tp-counters">Cmp: 0 | Nodes: 0 | Moves: 0</div>
+      </section>
+
+      <!-- 2 Nested loop -->
+      <section class="compare-card card" aria-label="Nested-loop Approach">
+        <div class="compare-header" style="border-top: 3px solid #8B5CF6;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span class="poly-badge" style="background: #8B5CF6;">2</span>
+            <span>Nested-Loop Traversal</span>
+          </div>
+          <span id="nl-phase-badge" class="badge badge-sort">Scan</span>
+        </div>
+        <div class="compare-viewport">
+          <div id="nl-row-p" style="min-height: 65px;"></div>
+          <div id="nl-row-q" style="min-height: 65px;"></div>
+          <div id="nl-row-r" style="min-height: 65px;"></div>
+        </div>
+        <div style="padding: 8px 12px; font-size: 0.8rem; border-top: 1px solid var(--border); min-height: 38px; color: var(--text-secondary); background: var(--surface-raised);" id="nl-narration"></div>
+        <div style="padding: 6px 12px; background: var(--surface); border-top: 1px solid var(--border-subtle); font-size: 0.75rem; font-weight: 700; font-family: var(--font-mono); color: #8B5CF6;" id="nl-counters">Cmp: 0 | Nodes: 0 | Moves: 0</div>
+      </section>
+
+      <!-- 3 Insertion -->
+      <section class="compare-card card" aria-label="Insertion Approach">
+        <div class="compare-header" style="border-top: 3px solid #10B981;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span class="poly-badge" style="background: #10B981;">3</span>
+            <span>Insertion-Based</span>
+          </div>
+          <span id="ins-phase-badge" class="badge badge-insert">Copy</span>
+        </div>
+        <div class="compare-viewport">
+          <div id="ins-row-p" style="min-height: 65px;"></div>
+          <div id="ins-row-q" style="min-height: 65px;"></div>
+          <div id="ins-row-r" style="min-height: 65px;"></div>
+        </div>
+        <div style="padding: 8px 12px; font-size: 0.8rem; border-top: 1px solid var(--border); min-height: 38px; color: var(--text-secondary); background: var(--surface-raised);" id="ins-narration"></div>
+        <div style="padding: 6px 12px; background: var(--surface); border-top: 1px solid var(--border-subtle); font-size: 0.75rem; font-weight: 700; font-family: var(--font-mono); color: #10B981;" id="ins-counters">Cmp: 0 | Nodes: 0 | Moves: 0</div>
+      </section>
+    </div>
+
+    <!-- Summary & Comparative Cost Analysis Card -->
+    <section class="card" aria-labelledby="summary-title" style="margin-top: var(--space-2);">
+      <h2 id="summary-title" style="font-size: 1.15rem; font-weight: 700; margin-bottom: var(--space-2);">Comparative Performance Telemetry</h2>
+
+      <!-- Self-check Result Banner -->
+      <div id="self-check-result" style="padding: 10px 14px; background: var(--surface-raised); border-radius: var(--radius-md); font-size: 0.9rem; margin-bottom: var(--space-3); border: 1px solid var(--border);"></div>
+
+      <!-- Performance Summary Table -->
+      <div style="overflow-x: auto;">
+        <table class="compare-summary-table">
+          <thead>
+            <tr>
+              <th>Approach</th>
+              <th>Comparisons</th>
+              <th>Nodes Created</th>
+              <th>Pointer Moves</th>
+              <th>Time Complexity</th>
+              <th>Extra Space</th>
+            </tr>
+          </thead>
+          <tbody id="summary-tbody"></tbody>
+        </table>
+      </div>
+
+      <!-- Comparative Bar Chart -->
+      <div style="margin-top: var(--space-4);">
+        <h3 style="font-size: 0.95rem; font-weight: 700; margin-bottom: var(--space-2); color: var(--text);">Comparison Cost Benchmark</h3>
+        <div class="chart-bar-container">
+          <div class="chart-bar-row">
+            <span class="chart-bar-label">Two-pointer</span>
+            <div class="chart-bar-fill-track">
+              <div id="chart-bar-tp" class="chart-bar-fill" style="width: 0%; background: #6366F1;"></div>
+            </div>
+            <span id="chart-val-tp" style="width: 130px; font-size: 0.8rem; font-family: var(--font-mono); font-weight: 600;">0</span>
+          </div>
+          <div class="chart-bar-row">
+            <span class="chart-bar-label">Nested loop</span>
+            <div class="chart-bar-fill-track">
+              <div id="chart-bar-nl" class="chart-bar-fill" style="width: 0%; background: #8B5CF6;"></div>
+            </div>
+            <span id="chart-val-nl" style="width: 130px; font-size: 0.8rem; font-family: var(--font-mono); font-weight: 600;">0</span>
+          </div>
+          <div class="chart-bar-row">
+            <span class="chart-bar-label">Insertion</span>
+            <div class="chart-bar-fill-track">
+              <div id="chart-bar-ins" class="chart-bar-fill" style="width: 0%; background: #10B981;"></div>
+            </div>
+            <span id="chart-val-ins" style="width: 130px; font-size: 0.8rem; font-family: var(--font-mono); font-weight: 600;">0</span>
+          </div>
+        </div>
+        <p id="chart-explanation" style="margin-top: var(--space-2); font-size: 0.85rem; color: var(--muted);"></p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer" role="contentinfo">
+    <div class="container footer-content">
+      <span>Academic College Project | Data Structures: Singly Linked Lists</span>
+      <span>Runs completely offline | Pure HTML, CSS & Vanilla JavaScript</span>
+    </div>
+  </footer>
+
+  <script type="module">
+    import { initComparePage } from './js/pages/comparePage.js?v=2.2';
+    initComparePage();
+  </script>
+</body>
+</html>

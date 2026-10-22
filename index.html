@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Interactive Polynomial Addition Visualizer using Singly Linked Lists. Learn two-pointer, nested loop, and insertion algorithms with step-by-step animations.">
+  <title>Polynomial Addition Visualizer | Singly Linked Lists Teaching Tool</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="css/tokens.css?v=2.2">
+  <link rel="stylesheet" href="css/base.css?v=2.2">
+  <link rel="stylesheet" href="css/components.css?v=2.2">
+  <link rel="stylesheet" href="css/visualizer.css?v=2.2">
+  <style>
+    .hero {
+      padding: var(--space-8) 0 var(--space-6);
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-4);
+    }
+    .hero-title {
+      font-size: 2.5rem;
+      font-weight: 800;
+      line-height: 1.2;
+      color: var(--text);
+      max-width: 800px;
+    }
+    .hero-subtitle {
+      font-size: 1.2rem;
+      color: var(--muted);
+      max-width: 650px;
+    }
+    .hero-actions {
+      display: flex;
+      gap: var(--space-4);
+      margin-top: var(--space-2);
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .hero-strip {
+      margin: var(--space-6) 0;
+      padding: var(--space-4);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      overflow-x: auto;
+      max-width: 100%;
+    }
+    .approach-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--space-6);
+      margin: var(--space-6) 0;
+    }
+    @media (min-width: 768px) {
+      .approach-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+    .step-guide-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--space-4);
+      margin-top: var(--space-4);
+    }
+    @media (min-width: 768px) {
+      .step-guide-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+    .step-guide-card {
+      background: var(--surface-raised);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: var(--space-4);
+      text-align: center;
+    }
+    .step-guide-num {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-full);
+      background: var(--accent);
+      color: #FFFFFF;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      margin-bottom: var(--space-2);
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header" role="banner"></header>
+
+  <main class="container" id="main-content">
+    <!-- Hero Section [H1, H2] -->
+    <section class="hero" aria-labelledby="hero-title">
+      <h1 id="hero-title" class="hero-title">Polynomial Addition, Made Visible</h1>
+      <p class="hero-subtitle">
+        Understand pointer movements, exponent comparisons, node creation, and pointer re-linking step by step using singly linked lists.
+      </p>
+
+      <div class="hero-actions">
+        <a href="visualizer.html?a=tp" class="btn btn-primary" style="padding: var(--space-3) var(--space-6); font-size: 1.05rem;">
+          Try the example &rarr;
+        </a>
+        <a href="visualizer.html" class="btn btn-secondary" style="padding: var(--space-3) var(--space-6); font-size: 1.05rem;">
+          Open visualizer
+        </a>
+      </div>
+
+      <!-- Interactive Decorative Node Strip -->
+      <div class="hero-strip" aria-hidden="true">
+        <svg viewBox="0 0 760 80" width="720" height="76" class="list-svg">
+          <defs>
+            <marker id="hero-arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L6,3 z" fill="var(--text)" />
+            </marker>
+          </defs>
+          <g transform="translate(10, 16)">
+            <!-- Head pointer -->
+            <text x="0" y="24" font-family="var(--font-mono)" font-size="14" font-weight="700" fill="var(--muted)">head</text>
+            <path d="M34,18 L58,18" stroke="var(--text)" stroke-width="2" marker-end="url(#hero-arrow)" />
+
+            <!-- Node 1: 5x^4 -->
+            <g transform="translate(64, 0)">
+              <rect x="0" y="0" width="120" height="44" rx="6" fill="var(--surface-raised)" stroke="var(--border)" stroke-width="1.5"/>
+              <line x1="40" y1="0" x2="40" y2="44" stroke="var(--border)" stroke-width="1.5"/>
+              <line x1="80" y1="0" x2="80" y2="44" stroke="var(--border)" stroke-width="1.5"/>
+              <text x="20" y="27" font-family="var(--font-mono)" font-size="16" font-weight="700" fill="var(--text)" text-anchor="middle">5</text>
+              <text x="60" y="27" font-family="var(--font-mono)" font-size="16" font-weight="700" fill="var(--accent)" text-anchor="middle">4</text>
+              <circle cx="100" cy="22" r="4" fill="var(--muted)"/>
+            </g>
+            <path d="M164,22 L196,22" stroke="var(--text)" stroke-width="2" marker-end="url(#hero-arrow)" />
+
+            <!-- Node 2: 3x^2 -->
+            <g transform="translate(202, 0)">
+              <rect x="0" y="0" width="120" height="44" rx="6" fill="var(--surface-raised)" stroke="var(--border)" stroke-width="1.5"/>
+              <line x1="40" y1="0" x2="40" y2="44" stroke="var(--border)" stroke-width="1.5"/>
+              <line x1="80" y1="0" x2="80" y2="44" stroke="var(--border)" stroke-width="1.5"/>
+              <text x="20" y="27" font-family="var(--font-mono)" font-size="16" font-weight="700" fill="var(--text)" text-anchor="middle">3</text>
+              <text x="60" y="27" font-family="var(--font-mono)" font-size="16" font-weight="700" fill="var(--accent)" text-anchor="middle">2</text>
+              <circle cx="100" cy="22" r="4" fill="var(--muted)"/>
+            </g>
+            <path d="M302,22 L334,22" stroke="var(--text)" stroke-width="2" marker-end="url(#hero-arrow)" />
+
+            <!-- Node 3: 2x -->
+            <g transform="translate(340, 0)">
+              <rect x="0" y="0" width="120" height="44" rx="6" fill="var(--surface-raised)" stroke="var(--border)" stroke-width="1.5"/>
+              <line x1="40" y1="0" x2="40" y2="44" stroke="var(--border)" stroke-width="1.5"/>
+              <line x1="80" y1="0" x2="80" y2="44" stroke="var(--border)" stroke-width="1.5"/>
+              <text x="20" y="27" font-family="var(--font-mono)" font-size="16" font-weight="700" fill="var(--text)" text-anchor="middle">2</text>
+              <text x="60" y="27" font-family="var(--font-mono)" font-size="16" font-weight="700" fill="var(--accent)" text-anchor="middle">1</text>
+              <circle cx="100" cy="22" r="4" fill="var(--muted)"/>
+            </g>
+            <path d="M440,22 L472,22" stroke="var(--text)" stroke-width="2" marker-end="url(#hero-arrow)" />
+
+            <!-- Node 4: 7 -->
+            <g transform="translate(478, 0)">
+              <rect x="0" y="0" width="120" height="44" rx="6" fill="var(--surface-raised)" stroke="var(--border)" stroke-width="1.5"/>
+              <line x1="40" y1="0" x2="40" y2="44" stroke="var(--border)" stroke-width="1.5"/>
+              <line x1="80" y1="0" x2="80" y2="44" stroke="var(--border)" stroke-width="1.5"/>
+              <text x="20" y="27" font-family="var(--font-mono)" font-size="16" font-weight="700" fill="var(--text)" text-anchor="middle">7</text>
+              <text x="60" y="27" font-family="var(--font-mono)" font-size="16" font-weight="700" fill="var(--accent)" text-anchor="middle">0</text>
+              <circle cx="100" cy="22" r="4" fill="var(--muted)"/>
+            </g>
+            <path d="M578,22 L610,22" stroke="var(--text)" stroke-width="2" marker-end="url(#hero-arrow)" />
+
+            <!-- NULL box -->
+            <g transform="translate(616, 0)">
+              <rect x="0" y="0" width="48" height="44" rx="4" fill="var(--surface-raised)" stroke="var(--border)" stroke-width="1.5"/>
+              <text x="24" y="26" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--muted)" text-anchor="middle">NULL</text>
+            </g>
+          </g>
+        </svg>
+      </div>
+    </section>
+
+    <!-- Three Approaches Cards [H3] -->
+    <section aria-labelledby="approaches-title">
+      <h2 id="approaches-title" style="font-size: 1.5rem; font-weight: 700; margin-bottom: var(--space-2); text-align: center;">
+        Three Ways to Add Polynomials
+      </h2>
+      <p style="text-align: center; color: var(--muted); margin-bottom: var(--space-4);">
+        Compare how data structures and algorithmic designs impact performance and memory traversal.
+      </p>
+
+      <div class="approach-grid">
+        <!-- 1 Two-pointer -->
+        <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <span class="badge badge-scan" style="margin-bottom: var(--space-2);">Approach 1</span>
+            <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: var(--space-2);">Two-Pointer Traversal</h3>
+            <p style="color: var(--muted); font-size: 0.95rem; margin-bottom: var(--space-4);">
+              Merge two sorted lists simultaneously by walking <code>p</code> and <code>q</code> pointers together, mirroring the merge step of Merge Sort.
+            </p>
+            <div style="background: var(--surface-raised); padding: var(--space-2) var(--space-3); border-radius: var(--radius-md); font-family: var(--font-mono); font-size: 0.85rem; margin-bottom: var(--space-4);">
+              Time: <strong>O(m + n)</strong> | Space: <strong>O(1)</strong>
+            </div>
+          </div>
+          <a href="visualizer.html?a=tp" class="btn btn-primary" style="width: 100%;">Open Two-pointer &rarr;</a>
+        </div>
+
+        <!-- 2 Nested Loop -->
+        <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <span class="badge badge-sort" style="margin-bottom: var(--space-2);">Approach 2</span>
+            <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: var(--space-2);">Nested-Loop Traversal</h3>
+            <p style="color: var(--muted); font-size: 0.95rem; margin-bottom: var(--space-4);">
+              Iterate outer pointer <code>p</code> through P while scanning Q with inner pointer <code>q</code>. Uses visited flags and a final sorting phase.
+            </p>
+            <div style="background: var(--surface-raised); padding: var(--space-2) var(--space-3); border-radius: var(--radius-md); font-family: var(--font-mono); font-size: 0.85rem; margin-bottom: var(--space-4);">
+              Time: <strong>O(m × n) + sort</strong> | Space: <strong>O(n)</strong>
+            </div>
+          </div>
+          <a href="visualizer.html?a=nl" class="btn btn-primary" style="width: 100%;">Open Nested Loop &rarr;</a>
+        </div>
+
+        <!-- 3 Insertion -->
+        <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <span class="badge badge-insert" style="margin-bottom: var(--space-2);">Approach 3</span>
+            <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: var(--space-2);">Insertion-Based</h3>
+            <p style="color: var(--muted); font-size: 0.95rem; margin-bottom: var(--space-4);">
+              Initialize R as a copy of P, then incrementally insert and merge each term of Q into R. Includes cursor caching optimisation.
+            </p>
+            <div style="background: var(--surface-raised); padding: var(--space-2) var(--space-3); border-radius: var(--radius-md); font-family: var(--font-mono); font-size: 0.85rem; margin-bottom: var(--space-4);">
+              Time: <strong>O(m × n) / O(m+n)</strong> | Space: <strong>O(1)</strong>
+            </div>
+          </div>
+          <a href="visualizer.html?a=ins" class="btn btn-primary" style="width: 100%;">Open Insertion &rarr;</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- How it works [H4] -->
+    <section class="card" aria-labelledby="how-it-works-title" style="margin: var(--space-6) 0;">
+      <h2 id="how-it-works-title" style="font-size: 1.35rem; font-weight: 700; text-align: center; margin-bottom: var(--space-2);">
+        How It Works
+      </h2>
+      <div class="step-guide-grid">
+        <div class="step-guide-card">
+          <div class="step-guide-num">1</div>
+          <h3 style="font-weight: 600; font-size: 1rem; margin-bottom: var(--space-1);">Enter Polynomials</h3>
+          <p style="font-size: 0.85rem; color: var(--muted);">Type standard mathematical notation, load preset test cases, or click Random.</p>
+        </div>
+        <div class="step-guide-card">
+          <div class="step-guide-num">2</div>
+          <h3 style="font-weight: 600; font-size: 1rem; margin-bottom: var(--space-1);">Build Lists</h3>
+          <p style="font-size: 0.85rem; color: var(--muted);">Parser validates and renders real linked-list nodes with coef, exp, and next pointers.</p>
+        </div>
+        <div class="step-guide-card">
+          <div class="step-guide-num">3</div>
+          <h3 style="font-weight: 600; font-size: 1rem; margin-bottom: var(--space-1);">Step Through</h3>
+          <p style="font-size: 0.85rem; color: var(--muted);">Step forward and backward, adjust speed, read narration, and follow highlighted pseudocode.</p>
+        </div>
+        <div class="step-guide-card">
+          <div class="step-guide-num">4</div>
+          <h3 style="font-weight: 600; font-size: 1rem; margin-bottom: var(--space-1);">Compare</h3>
+          <p style="font-size: 0.85rem; color: var(--muted);">Run all three approaches on the exact same input to compare live operation counts.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer" role="contentinfo">
+    <div class="container footer-content">
+      <span>Academic College Project | Data Structures: Singly Linked Lists</span>
+      <span>No external network calls | 100% offline accessible</span>
+    </div>
+  </footer>
+
+  <script type="module">
+    import { initNavigation } from './js/ui/nav.js';
+    initNavigation('home');
+  </script>
+</body>
+</html>

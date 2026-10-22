@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Interactive Polynomial Addition Visualizer for learning linked-list algorithms: Two-pointer, Nested-loop, and Insertion.">
+  <title>Visualizer | Polynomial Addition Visualizer</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="css/tokens.css?v=2.2">
+  <link rel="stylesheet" href="css/base.css?v=2.2">
+  <link rel="stylesheet" href="css/components.css?v=2.2">
+  <link rel="stylesheet" href="css/visualizer.css?v=2.2">
+</head>
+<body>
+  <header class="site-header" role="banner"></header>
+
+  <main class="container visualizer-page" id="main-content">
+    <!-- 1. Sleek Input Studio Bar -->
+    <section class="input-panel card" aria-labelledby="input-panel-title">
+      <h1 id="input-panel-title" class="sr-only">Polynomial Input and Configuration</h1>
+
+      <!-- Dual Input Row -->
+      <div class="input-dual-grid">
+        <!-- P(x) Field -->
+        <div class="input-field-group">
+          <div class="field-header">
+            <label for="input-p" class="field-label">
+              <span class="poly-badge poly-badge-p">P</span>
+              <span>Polynomial P(x)</span>
+            </label>
+            <span id="meta-p" class="badge badge-meta"></span>
+          </div>
+          <div class="input-wrapper">
+            <input type="text" id="input-p" class="text-input" spellcheck="false" autocomplete="off" placeholder="e.g. 5x^4 + 3x^2 + 2x + 7">
+          </div>
+          <div id="message-p" class="field-message" aria-live="polite"></div>
+        </div>
+
+        <!-- Q(x) Field -->
+        <div class="input-field-group">
+          <div class="field-header">
+            <label for="input-q" class="field-label">
+              <span class="poly-badge poly-badge-q">Q</span>
+              <span>Polynomial Q(x)</span>
+            </label>
+            <span id="meta-q" class="badge badge-meta"></span>
+          </div>
+          <div class="input-wrapper">
+            <input type="text" id="input-q" class="text-input" spellcheck="false" autocomplete="off" placeholder="e.g. 2x^4 + 4x^3 - 3x^2 + 6">
+          </div>
+          <div id="message-q" class="field-message" aria-live="polite"></div>
+        </div>
+      </div>
+
+      <!-- Action & Config Ribbon -->
+      <div class="input-ribbon">
+        <!-- Approach Segmented Switcher -->
+        <div class="segmented-control" role="radiogroup" aria-label="Algorithm Approach">
+          <label class="segmented-option">
+            <input type="radio" name="approach" value="tp" checked>
+            <span class="segmented-label">1 Two-pointer</span>
+          </label>
+          <label class="segmented-option">
+            <input type="radio" name="approach" value="nl">
+            <span class="segmented-label">2 Nested loop</span>
+          </label>
+          <label class="segmented-option">
+            <input type="radio" name="approach" value="ins">
+            <span class="segmented-label">3 Insertion</span>
+          </label>
+        </div>
+
+        <!-- Insertion Cursor Optimisation Option -->
+        <label class="checkbox-pill" id="cursor-opt-container" style="display: none;">
+          <input type="checkbox" id="cursor-opt-checkbox">
+          <span>Cursor Optimisation</span>
+        </label>
+
+        <!-- Presets & Quick Helpers -->
+        <div class="ribbon-helpers">
+          <select id="preset-select" class="select-input" aria-label="Select preset polynomial">
+            <option value="">Choose Preset...</option>
+          </select>
+
+          <div class="btn-group">
+            <button type="button" id="btn-random" class="btn btn-secondary btn-sm" title="Generate random polynomials">Random</button>
+            <button type="button" id="btn-swap" class="btn btn-secondary btn-sm" title="Swap P and Q">Swap</button>
+            <button type="button" id="btn-clear" class="btn btn-secondary btn-sm" title="Clear inputs">Clear</button>
+            <button type="button" id="btn-toggle-tb" class="btn btn-secondary btn-sm" title="Open term builder helper">+ Add Term</button>
+          </div>
+
+          <button type="button" id="btn-build" class="btn btn-primary" style="margin-left: auto;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+            <span>Build Lists</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Expandable Term Builder Tray -->
+      <div id="term-builder-tray" class="term-builder-tray" style="display: none;">
+        <span style="font-weight: 600; font-size: 0.85rem; color: var(--muted);">Term Builder:</span>
+        <input type="number" id="tb-coef" class="term-input" placeholder="coef" title="Coefficient (-999 to 999)">
+        <span class="term-math-x">x^</span>
+        <input type="number" id="tb-exp" class="term-input" placeholder="exp" min="0" max="99" title="Exponent (0 to 99)">
+        <span style="color: var(--muted); font-size: 0.85rem;">into</span>
+        <select id="tb-target" class="term-input" style="width: 55px;">
+          <option value="P">P(x)</option>
+          <option value="Q">Q(x)</option>
+        </select>
+        <button type="button" id="tb-add-btn" class="btn btn-primary btn-sm">+ Append Term</button>
+      </div>
+    </section>
+
+    <!-- 2. Studio Workspace Grid: Canvas & Transport Deck + Sidebar (Pseudocode & Counters) -->
+    <div class="visualizer-grid">
+      <!-- Main Visualizer Column: Canvas + Controls -->
+      <div class="canvas-column">
+        <!-- Live Narration Banner Floating Above Canvas -->
+        <div id="narration-bar" class="narration-banner" aria-live="polite" role="status">
+          <div class="narration-pulse"></div>
+          <span class="narration-step-badge">Step 0/0</span>
+          <span class="narration-text">Enter two polynomials and press Build lists to begin.</span>
+        </div>
+
+        <!-- Prediction Prompt Card (conditionally shown) -->
+        <div id="prediction-card" class="prediction-box card" style="display: none;" role="region" aria-labelledby="predict-title">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <strong id="predict-title" style="color: var(--accent); font-size: 1rem; display: flex; align-items: center; gap: 6px;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+              </svg>
+              <span>Predict Next Step</span>
+            </strong>
+            <span id="predict-score-display" style="font-weight: 600; color: var(--muted); font-size: 0.85rem;">Score: 0 of 0</span>
+          </div>
+          <p id="predict-question" style="font-weight: 500; font-size: 0.95rem; margin-top: 4px;"></p>
+          <div id="predict-options" class="predict-options"></div>
+          <div style="display: flex; justify-content: flex-end; margin-top: 4px;">
+            <button type="button" id="btn-check-predict" class="btn btn-primary btn-sm">Submit Prediction</button>
+          </div>
+        </div>
+
+        <!-- SVG Animation Viewport -->
+        <section class="canvas-panel card" aria-label="Linked List Animation Canvas">
+          <div class="canvas-header">
+            <div style="display: flex; align-items: center; gap: var(--space-2);">
+              <span class="canvas-title">Linked List Memory View</span>
+              <span id="phase-badge" class="badge badge-scan">Scan</span>
+            </div>
+            <div class="canvas-legend-mini">
+              <span class="mini-legend-dot" style="background: var(--state-compare-bg); border-color: var(--state-compare-border);"></span> <span>Compare</span>
+              <span class="mini-legend-dot" style="background: var(--state-created-bg); border-color: var(--state-created-border);"></span> <span>Created</span>
+              <span class="mini-legend-dot" style="background: var(--state-visited-bg); border: 1px dashed var(--state-visited-border);"></span> <span>Visited</span>
+              <span class="mini-legend-dot" style="background: var(--state-zero-bg); border-color: var(--state-zero-border);"></span> <span>Zero</span>
+            </div>
+          </div>
+
+          <div class="canvas-viewport" id="canvas-viewport">
+            <!-- Row P -->
+            <div class="list-row-wrapper">
+              <div class="list-row-label poly-badge-p">P</div>
+              <div class="list-svg-container" id="list-row-p"></div>
+            </div>
+
+            <!-- Row Q -->
+            <div class="list-row-wrapper">
+              <div class="list-row-label poly-badge-q">Q</div>
+              <div class="list-svg-container" id="list-row-q"></div>
+            </div>
+
+            <!-- Row R -->
+            <div class="list-row-wrapper">
+              <div class="list-row-label poly-badge-r">R</div>
+              <div class="list-svg-container" id="list-row-r"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Transport Deck (Controls Bar Directly Underneath Canvas) -->
+        <section class="transport-deck card" aria-label="Animation Playback Controls">
+          <!-- Left: Transport Buttons -->
+          <div class="transport-btn-group">
+            <button type="button" id="btn-restart" class="btn btn-icon" title="Restart from beginning (Home)" aria-label="Restart from step 0">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="19,20 9,12 19,4"></polygon><line x1="5" y1="4" x2="5" y2="20" stroke="currentColor" stroke-width="2"></line></svg>
+            </button>
+            <button type="button" id="btn-prev" class="btn btn-icon" title="Step Back (Left Arrow)" aria-label="Step backward">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="19,19 7,12 19,5"></polygon></svg>
+            </button>
+            <button type="button" id="btn-play-pause" class="btn btn-primary transport-play-btn" title="Play / Pause (Space)" aria-label="Start playback">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"></polygon></svg>
+              <span>Play</span>
+            </button>
+            <button type="button" id="btn-next" class="btn btn-icon" title="Step Forward (Right Arrow)" aria-label="Step forward">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,5 17,12 5,19"></polygon></svg>
+            </button>
+            <button type="button" id="btn-end" class="btn btn-icon" title="Jump to End (End)" aria-label="Jump to finish">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,4 15,12 5,20"></polygon><line x1="19" y1="4" x2="19" y2="20" stroke="currentColor" stroke-width="2"></line></svg>
+            </button>
+          </div>
+
+          <!-- Center: Interactive Scrubber -->
+          <div class="scrubber-deck">
+            <input type="range" id="step-scrubber" class="step-scrubber" min="0" max="0" value="0" aria-label="Animation step scrubber">
+            <span id="step-indicator" class="step-indicator">Step 0 / 0</span>
+          </div>
+
+          <!-- Right: Speed Selector & Predict Mode -->
+          <div class="transport-options">
+            <div class="segmented-control" role="group" aria-label="Playback speed selector">
+              <button type="button" class="speed-btn" data-speed="0.25">0.25x</button>
+              <button type="button" class="speed-btn" data-speed="0.5">0.5x</button>
+              <button type="button" class="speed-btn active" data-speed="1.0">1x</button>
+              <button type="button" class="speed-btn" data-speed="2.0">2x</button>
+              <button type="button" class="speed-btn" data-speed="4.0">4x</button>
+            </div>
+
+            <label class="checkbox-pill" title="Test your algorithmic intuition before each step">
+              <input type="checkbox" id="predict-mode-toggle">
+              <span>Predict</span>
+            </label>
+          </div>
+        </section>
+
+        <!-- Result Card (appears when finished) -->
+        <section id="result-panel" class="result-panel card" style="display: none;" aria-label="Calculation Result">
+          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--space-2);">
+            <div class="result-title" id="result-text">R(x) = ...</div>
+            <div class="result-actions">
+              <button type="button" id="btn-compare-all" class="btn btn-primary btn-sm">Compare all three &rarr;</button>
+              <button type="button" id="btn-copy-result" class="btn btn-secondary btn-sm">Copy result</button>
+              <button type="button" id="btn-copy-share" class="btn btn-secondary btn-sm">Share link</button>
+              <button type="button" id="btn-export-log" class="btn btn-secondary btn-sm">Export log (.txt)</button>
+            </div>
+          </div>
+          <div class="result-meta" id="result-stats"></div>
+          <div id="result-predict-score" style="display: none; font-weight: 600; color: var(--accent); font-size: 0.9rem;"></div>
+        </section>
+      </div>
+
+      <!-- Sidebar: Pseudocode & Telemetry -->
+      <aside class="sidebar-column">
+        <!-- Pseudocode Panel -->
+        <section class="pseudocode-panel card" aria-label="Algorithm Pseudocode">
+          <div class="pseudocode-header">
+            <span style="font-weight: 600; font-size: 0.85rem; color: var(--text);">ALGORITHM PSEUDOCODE</span>
+          </div>
+          <div class="pseudocode-body" id="pseudocode-body"></div>
+        </section>
+
+        <!-- Live Telemetry Counters -->
+        <section class="counters-panel card" aria-label="Algorithm Performance Counters">
+          <div class="counters-header">
+            <span style="font-weight: 600; font-size: 0.85rem; color: var(--text);">METRICS & TELEMETRY</span>
+          </div>
+          <div class="counters-grid">
+            <div class="counter-card">
+              <span class="counter-label">Comparisons</span>
+              <span class="counter-val" id="counter-comparisons">0</span>
+            </div>
+            <div class="counter-card">
+              <span class="counter-label">Nodes Created</span>
+              <span class="counter-val" id="counter-created">0</span>
+            </div>
+            <div class="counter-card">
+              <span class="counter-label">Pointer Moves</span>
+              <span class="counter-val" id="counter-moves">0</span>
+            </div>
+            <div class="counter-card" id="counter-sort-row" style="display: none;">
+              <span class="counter-label">Sort Comparisons</span>
+              <span class="counter-val" id="counter-sort-val">0</span>
+            </div>
+          </div>
+
+          <div class="complexity-bar">
+            <span>Time: <strong class="complexity-tag" id="complexity-time">O(m + n)</strong></span>
+            <span>Space: <strong class="complexity-tag" id="complexity-space">O(1)</strong></span>
+          </div>
+        </section>
+      </aside>
+    </div>
+  </main>
+
+  <footer class="site-footer" role="contentinfo">
+    <div class="container footer-content">
+      <span>Academic College Project | Data Structures: Singly Linked Lists</span>
+      <span>Runs completely offline | Pure HTML, CSS & Vanilla JavaScript</span>
+    </div>
+  </footer>
+
+  <script type="module">
+    import { initVisualizerPage } from './js/pages/visualizerPage.js?v=2.2';
+    initVisualizerPage();
+  </script>
+</body>
+</html>

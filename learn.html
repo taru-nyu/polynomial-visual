@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Learn polynomial addition with linked lists: theory, pseudocode, time and space complexity, and viva exam questions.">
+  <title>Learn & Theory | Polynomial Addition Visualizer</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="css/tokens.css?v=2.2">
+  <link rel="stylesheet" href="css/base.css?v=2.2">
+  <link rel="stylesheet" href="css/components.css?v=2.2">
+  <link rel="stylesheet" href="css/visualizer.css?v=2.2">
+  <style>
+    .learn-layout {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--space-6);
+      padding: var(--space-6) 0 var(--space-8);
+    }
+    @media (min-width: 1024px) {
+      .learn-layout {
+        grid-template-columns: 240px 1fr;
+        align-items: start;
+      }
+    }
+    .toc-sticky {
+      position: sticky;
+      top: 84px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4);
+      box-shadow: var(--shadow-sm);
+    }
+    .toc-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: var(--space-3);
+    }
+    .toc-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+    .toc-link {
+      color: var(--muted);
+      font-size: 0.95rem;
+      font-weight: 500;
+      display: block;
+      padding: 4px 8px;
+      border-radius: var(--radius-sm);
+      transition: all var(--transition-speed);
+    }
+    .toc-link:hover {
+      color: var(--accent);
+      background: var(--surface-raised);
+      text-decoration: none;
+    }
+    .toc-link.active {
+      color: var(--accent);
+      font-weight: 700;
+      background: var(--accent-light);
+    }
+    .learn-content {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-6);
+    }
+    .learn-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-6);
+      box-shadow: var(--shadow-sm);
+      scroll-margin-top: 90px;
+    }
+    .learn-section h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: var(--space-4);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+    }
+    .learn-section p {
+      margin-bottom: var(--space-4);
+      color: var(--text);
+      line-height: 1.7;
+    }
+    .code-block-wrapper {
+      position: relative;
+      background: var(--surface-raised);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: var(--space-4);
+      margin: var(--space-4) 0;
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      line-height: 1.6;
+      overflow-x: auto;
+    }
+    .code-block-wrapper pre {
+      margin: 0;
+    }
+    .btn-copy-code {
+      position: absolute;
+      top: var(--space-2);
+      right: var(--space-2);
+      padding: 3px 8px;
+      font-size: 0.75rem;
+    }
+    .accordion-item {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      margin-bottom: var(--space-3);
+      overflow: hidden;
+    }
+    .accordion-trigger {
+      width: 100%;
+      text-align: left;
+      padding: var(--space-3) var(--space-4);
+      background: var(--surface-raised);
+      font-weight: 600;
+      font-size: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .accordion-trigger:hover {
+      background: var(--border);
+    }
+    .accordion-panel {
+      padding: var(--space-4);
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      line-height: 1.6;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header" role="banner"></header>
+
+  <main class="container learn-layout" id="main-content">
+    <!-- Sticky Table of Contents -->
+    <nav class="toc-sticky" aria-label="Table of Contents">
+      <div class="toc-title">On this page</div>
+      <ul class="toc-list">
+        <li><a href="#linked-lists" class="toc-link active">1. Linked Lists</a></li>
+        <li><a href="#two-pointer" class="toc-link">2. Two-pointer</a></li>
+        <li><a href="#nested-loop" class="toc-link">3. Nested Loop</a></li>
+        <li><a href="#insertion" class="toc-link">4. Insertion</a></li>
+        <li><a href="#comparison" class="toc-link">5. Comparison Table</a></li>
+        <li><a href="#viva-questions" class="toc-link">6. Viva Questions</a></li>
+      </ul>
+    </nav>
+
+    <!-- Detailed Learning Content -->
+    <div class="learn-content">
+      <!-- 1. Linked Lists -->
+      <article id="linked-lists" class="learn-section">
+        <h2>1. Polynomials as Singly Linked Lists</h2>
+        <p>In computer science, a polynomial in one variable can be represented efficiently as a singly linked list. Unlike an array of coefficients (which would waste memory for sparse polynomials like <code>x^1000 + 1</code>), a linked list allocates a node only for non-zero terms.</p>
+        
+        <div class="code-block-wrapper">
+          <pre>
+P(x) = 5x^4 + 3x^2 + 2x + 7
+
+head -> [ 5 | 4 | next ] -> [ 3 | 2 | next ] -> [ 2 | 1 | next ] -> [ 7 | 0 | next ] -> NULL
+          coef  exp           coef  exp
+          </pre>
+        </div>
+
+        <h3 style="font-size: 1.15rem; font-weight: 600; margin: var(--space-4) 0 var(--space-2);">Node Anatomy</h3>
+        <p>Each node in the list stores three fields:</p>
+        <ul style="margin-left: var(--space-6); margin-bottom: var(--space-4); line-height: 1.8;">
+          <li><strong>Coefficient (<code>coef</code>):</strong> The numerical multiplier (integer from -999 to 999).</li>
+          <li><strong>Exponent (<code>exp</code>):</strong> The power of x (whole number from 0 to 99).</li>
+          <li><strong>Next pointer (<code>next</code>):</strong> A reference pointing to the subsequent node, terminating at <code>NULL</code>.</li>
+        </ul>
+
+        <h3 style="font-size: 1.15rem; font-weight: 600; margin: var(--space-4) 0 var(--space-2);">Canonical Form</h3>
+        <p>A polynomial linked list is in <strong>canonical form</strong> when:</p>
+        <ol style="margin-left: var(--space-6); line-height: 1.8;">
+          <li>Terms are arranged in strictly descending exponent order.</li>
+          <li>No exponent appears more than once.</li>
+          <li>No node contains a coefficient of 0.</li>
+          <li>The zero polynomial is represented by an empty list (head is NULL).</li>
+        </ol>
+      </article>
+
+      <!-- 2. Two-pointer -->
+      <article id="two-pointer" class="learn-section">
+        <h2>
+          <span>2. Two-Pointer Traversal</span>
+          <a href="visualizer.html?a=tp" class="btn btn-secondary btn-sm">Try in Visualizer &rarr;</a>
+        </h2>
+        <p><strong>Idea:</strong> Inspired by the merge step of Merge Sort. Pointers <code>p</code> and <code>q</code> traverse both sorted lists simultaneously. At each step, compare the exponents of the current nodes:</p>
+        <ul style="margin-left: var(--space-6); margin-bottom: var(--space-4); line-height: 1.8;">
+          <li>If <code>p.exp > q.exp</code>: copy term from P to R and advance <code>p</code>.</li>
+          <li>If <code>q.exp > p.exp</code>: copy term from Q to R and advance <code>q</code>.</li>
+          <li>If <code>p.exp == q.exp</code>: sum the coefficients. If non-zero, append to R. Advance both <code>p</code> and <code>q</code>. If the sum is zero, drop the term.</li>
+          <li>When one list finishes, copy all remaining terms of the other list directly to R.</li>
+        </ul>
+
+        <div class="code-block-wrapper">
+          <button class="btn btn-secondary btn-sm btn-copy-code" data-code-id="code-tp">Copy</button>
+          <pre id="code-tp">
+1  p = P.head; q = Q.head; R = empty
+2  while p != NULL and q != NULL:
+3    if p.exp == q.exp:
+4      sum = p.coef + q.coef
+5      if sum != 0: append(R, sum, p.exp)
+6      p = p.next; q = q.next
+7    else if p.exp > q.exp:
+8      append(R, p.coef, p.exp); p = p.next
+9    else:
+10     append(R, q.coef, q.exp); q = q.next
+11 copy every remaining node of P or Q into R
+12 return R
+          </pre>
+        </div>
+
+        <p><strong>Complexity:</strong> Time is <strong>O(m + n)</strong>, where m and n are the term counts of P and Q, because each comparison advances at least one pointer. Extra space is <strong>O(1)</strong> apart from the output list.</p>
+      </article>
+
+      <!-- 3. Nested Loop -->
+      <article id="nested-loop" class="learn-section">
+        <h2>
+          <span>3. Nested-Loop Traversal</span>
+          <a href="visualizer.html?a=nl" class="btn btn-secondary btn-sm">Try in Visualizer &rarr;</a>
+        </h2>
+        <p><strong>Idea:</strong> Works without requiring either polynomial to be sorted! An outer pointer <code>p</code> iterates over every term in P. For each term, an inner pointer <code>q</code> scans through Q searching for a matching exponent.</p>
+        <ul style="margin-left: var(--space-6); margin-bottom: var(--space-4); line-height: 1.8;">
+          <li>Matched terms are summed and marked with a <strong>visited flag</strong> so they aren't added twice.</li>
+          <li>Unmatched terms in P are appended directly.</li>
+          <li>In Phase 2, all remaining unvisited nodes of Q are copied to R.</li>
+          <li>In Phase 3, the resulting list R is sorted into descending exponent order.</li>
+        </ul>
+
+        <div class="code-block-wrapper">
+          <button class="btn btn-secondary btn-sm btn-copy-code" data-code-id="code-nl">Copy</button>
+          <pre id="code-nl">
+1  R = empty; mark every node of Q unvisited
+2  for each node p in P:
+3    found = false
+4    for each unvisited node q in Q:
+5      if p.exp == q.exp:
+6        sum = p.coef + q.coef
+7        if sum != 0: append(R, sum, p.exp)
+8        mark q visited; found = true; break
+9    if not found: append(R, p.coef, p.exp)
+10 for each unvisited node q in Q: append(R, q.coef, q.exp)
+11 sort R by exponent, descending
+12 return R
+          </pre>
+        </div>
+
+        <p><strong>Complexity:</strong> Scan phase takes <strong>O(m × n)</strong> time. Sorting k terms adds up to O(k^2) in worst case. Space is <strong>O(n)</strong> for visited flags plus output.</p>
+      </article>
+
+      <!-- 4. Insertion -->
+      <article id="insertion" class="learn-section">
+        <h2>
+          <span>4. Insertion-Based Approach</span>
+          <a href="visualizer.html?a=ins" class="btn btn-secondary btn-sm">Try in Visualizer &rarr;</a>
+        </h2>
+        <p><strong>Idea:</strong> Models updating an existing polynomial. First, copy P into R. Then, take each term of Q, locate its correct sorted position in R using cursor <code>c</code> and trailing pointer <code>prev</code>, and either merge with an existing node or link in a new node.</p>
+        <ul style="margin-left: var(--space-6); margin-bottom: var(--space-4); line-height: 1.8;">
+          <li>If exponent matches: add coefficients. If coefficient cancels to 0, unlink node (<code>prev.next = c.next</code>).</li>
+          <li>If exponent does not exist: create a new node and link it between <code>prev</code> and <code>c</code>.</li>
+          <li><strong>Cursor Optimisation:</strong> If Q is sorted descending, each successive term has an exponent smaller than or equal to the previous one. Instead of restarting cursor <code>c</code> at the head of R each time, resume searching from where the last term was placed!</li>
+        </ul>
+
+        <div class="code-block-wrapper">
+          <button class="btn btn-secondary btn-sm btn-copy-code" data-code-id="code-ins">Copy</button>
+          <pre id="code-ins">
+1  R = copy of P
+2  for each node q in Q:
+3    lift q out of its row
+4    c = (optimised and cursor set) ? cursor : R.head; prev = node before c
+5    while c != NULL and c.exp > q.exp: prev = c; c = c.next
+6    if c != NULL and c.exp == q.exp:
+7      c.coef = c.coef + q.coef
+8      if c.coef == 0: unlink c (prev.next = c.next)
+9    else:
+10     insert new node (q.coef, q.exp) between prev and c
+11   cursor = node where the term landed
+12 return R
+          </pre>
+        </div>
+
+        <p><strong>Complexity:</strong> Worst case <strong>O(m × n)</strong> when cursor restarts. With cursor optimisation on sorted Q, time is <strong>O(m + n)</strong>. Extra space is <strong>O(1)</strong>.</p>
+      </article>
+
+      <!-- 5. Comparison Table -->
+      <article id="comparison" class="learn-section">
+        <h2>5. Comparison Matrix</h2>
+        <p>Comprehensive algorithmic comparison from PRD Section 10.7:</p>
+        <div style="overflow-x: auto;">
+          <table class="compare-summary-table">
+            <thead>
+              <tr>
+                <th>Approach</th>
+                <th>Time Complexity</th>
+                <th>Extra Space</th>
+                <th>Needs Sorted Input</th>
+                <th>Strengths</th>
+                <th>Weaknesses</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Two-pointer</strong></td>
+                <td><code>O(m + n)</code></td>
+                <td><code>O(1)</code></td>
+                <td>Both P and Q</td>
+                <td>Fastest, simplest traversal</td>
+                <td>Incorrect if either list is unsorted</td>
+              </tr>
+              <tr>
+                <td><strong>Nested loop</strong></td>
+                <td><code>O(m × n) + sort</code></td>
+                <td><code>O(n)</code></td>
+                <td>Neither list</td>
+                <td>Works on completely unordered inputs</td>
+                <td>Slowest; requires final sorting phase</td>
+              </tr>
+              <tr>
+                <td><strong>Insertion</strong></td>
+                <td><code>O(m × n)</code> or <code>O(m + n)</code></td>
+                <td><code>O(1)</code></td>
+                <td>P (and Q for cursor opt)</td>
+                <td>Great for incremental updates, shows pointer re-linking</td>
+                <td>Rescans from head without cursor optimisation</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+
+      <!-- 6. Viva Questions Accordion -->
+      <article id="viva-questions" class="learn-section">
+        <h2>6. Viva & Practical Exam Questions</h2>
+        <p>Common questions asked by professors and examiners during practical laboratory evaluations:</p>
+
+        <div class="accordion-item">
+          <button class="accordion-trigger" aria-expanded="false" aria-controls="viva-a1">
+            <span>1. Why use a linked list instead of an array for a polynomial?</span>
+            <span>+</span>
+          </button>
+          <div id="viva-a1" class="accordion-panel">
+            A sparse polynomial like <code>x^1000 + 1</code> would waste 1000 array indices of mostly zero entries. A linked list stores only the non-zero terms, saving significant space. Furthermore, inserting or deleting terms requires no element shifting.
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <button class="accordion-trigger" aria-expanded="false" aria-controls="viva-a2">
+            <span>2. What does a polynomial node hold?</span>
+            <span>+</span>
+          </button>
+          <div id="viva-a2" class="accordion-panel">
+            Three parts: coefficient (numerical value), exponent (degree power), and a pointer/reference to the next node in the list.
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <button class="accordion-trigger" aria-expanded="false" aria-controls="viva-a3">
+            <span>3. Why does the two-pointer approach require sorted input?</span>
+            <span>+</span>
+          </button>
+          <div id="viva-a3" class="accordion-panel">
+            It decides which pointer to advance based on comparing exponents. If a list is unsorted, matching terms can be skipped because the algorithm assumes smaller exponents cannot appear later.
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <button class="accordion-trigger" aria-expanded="false" aria-controls="viva-a4">
+            <span>4. What is the time complexity of the two-pointer approach?</span>
+            <span>+</span>
+          </button>
+          <div id="viva-a4" class="accordion-panel">
+            O(m + n), because each comparison advances at least one pointer (either p, q, or both), visiting every term at most once.
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <button class="accordion-trigger" aria-expanded="false" aria-controls="viva-a5">
+            <span>5. Why is the nested loop O(m × n)?</span>
+            <span>+</span>
+          </button>
+          <div id="viva-a5" class="accordion-panel">
+            For each of the m nodes of P, the inner loop may potentially scan through all n nodes of Q when looking for a matching exponent.
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <button class="accordion-trigger" aria-expanded="false" aria-controls="viva-a6">
+            <span>6. Why does the nested loop mark Q nodes as visited?</span>
+            <span>+</span>
+          </button>
+          <div id="viva-a6" class="accordion-panel">
+            To ensure that once a term of Q is matched and merged, it is never used again by a subsequent term, and is not duplicated during Phase 2 when leftover unvisited Q terms are copied.
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <button class="accordion-trigger" aria-expanded="false" aria-controls="viva-a7">
+            <span>7. How does cursor optimisation help the insertion approach?</span>
+            <span>+</span>
+          </button>
+          <div id="viva-a7" class="accordion-panel">
+            When Q is sorted in descending order, each subsequent term has an exponent less than or equal to the previous one. Therefore, the cursor never needs to move backwards to the head; continuing from the last insertion point reduces total comparisons to O(m + n).
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <button class="accordion-trigger" aria-expanded="false" aria-controls="viva-a8">
+            <span>8. What happens when two coefficients add to zero?</span>
+            <span>+</span>
+          </button>
+          <div id="viva-a8" class="accordion-panel">
+            The term is omitted from the result list. In the insertion approach, the existing node is unlinked by updating pointers. If all terms cancel, the result is the zero polynomial (an empty list with head = NULL).
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <button class="accordion-trigger" aria-expanded="false" aria-controls="viva-a9">
+            <span>9. How would you extend this to polynomial multiplication?</span>
+            <span>+</span>
+          </button>
+          <div id="viva-a9" class="accordion-panel">
+            Multiply each term of P with each term of Q (multiplying coefficients and adding exponents) to form partial product terms, and add them incrementally into a result list using the insertion or two-pointer merge approach.
+          </div>
+        </div>
+      </article>
+    </div>
+  </main>
+
+  <footer class="site-footer" role="contentinfo">
+    <div class="container footer-content">
+      <span>Academic College Project | Data Structures: Singly Linked Lists</span>
+      <span>Runs completely offline | Pure HTML, CSS & Vanilla JavaScript</span>
+    </div>
+  </footer>
+
+  <script type="module">
+    import { initLearnPage } from './js/pages/learnPage.js';
+    initLearnPage();
+  </script>
+</body>
+</html>

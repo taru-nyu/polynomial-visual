@@ -1,0 +1,215 @@
+/* Modernized CSS Design Tokens with Google Fonts & Vibrant Palettes */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap');
+
+:root {
+  /* Default: Modern Dark Studio Theme */
+  --bg: #090D16;
+  --bg-gradient: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(99, 102, 241, 0.18), transparent 70%), #090D16;
+  --surface: rgba(17, 24, 39, 0.82);
+  --surface-raised: rgba(30, 41, 59, 0.75);
+  --surface-overlay: rgba(9, 13, 22, 0.88);
+  --text: #F8FAFC;
+  --text-secondary: #CBD5E1;
+  --muted: #94A3B8;
+  --border: rgba(255, 255, 255, 0.10);
+  --border-subtle: rgba(255, 255, 255, 0.05);
+  --border-focus: #818CF8;
+
+  /* Brand Accents */
+  --accent: #6366F1;
+  --accent-hover: #4F46E5;
+  --accent-light: rgba(99, 102, 241, 0.16);
+  --accent-glow: rgba(99, 102, 241, 0.35);
+  --error: #EF4444;
+  --error-bg: rgba(239, 68, 68, 0.15);
+  --error-border: rgba(239, 68, 68, 0.4);
+  --warning: #F59E0B;
+  --warning-bg: rgba(245, 158, 11, 0.15);
+  --warning-border: rgba(245, 158, 11, 0.4);
+  --success: #10B981;
+  --success-bg: rgba(16, 185, 129, 0.15);
+  --success-border: rgba(16, 185, 129, 0.4);
+
+  /* Node State Colors (Dark Studio) */
+  --state-normal-bg: #131B2A;
+  --state-normal-border: #2D3D54;
+  --state-normal-text: #F8FAFC;
+
+  --state-compare-bg: rgba(245, 158, 11, 0.18);
+  --state-compare-border: #F59E0B;
+  --state-compare-badge: #FEF08A;
+
+  --state-outer-bg: rgba(56, 189, 248, 0.18);
+  --state-outer-border: #38BDF8;
+  --state-outer-badge: #BAE6FD;
+
+  --state-created-bg: rgba(16, 185, 129, 0.2);
+  --state-created-border: #10B981;
+  --state-created-badge: #A7F3D0;
+
+  --state-visited-bg: rgba(15, 23, 42, 0.5);
+  --state-visited-border: #334155;
+  --state-visited-text: #64748B;
+
+  --state-zero-bg: rgba(239, 68, 68, 0.2);
+  --state-zero-border: #EF4444;
+  --state-zero-badge: #FECACA;
+
+  --state-lifted-bg: rgba(168, 85, 247, 0.25);
+  --state-lifted-border: #A855F7;
+  --state-lifted-badge: #F3E8FF;
+
+  /* Typography */
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', "SF Mono", Menlo, Consolas, monospace;
+
+  /* Spacing Scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  /* Radii & Shadows */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 8px 24px -4px rgba(0, 0, 0, 0.5), 0 2px 8px -2px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 16px 40px -6px rgba(0, 0, 0, 0.65), 0 4px 14px -2px rgba(0, 0, 0, 0.4);
+
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 220ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-smooth: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Light Theme Override */
+[data-theme="light"] {
+  --bg: #F8FAFC;
+  --bg-gradient: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(99, 102, 241, 0.1), transparent 70%), #F8FAFC;
+  --surface: #FFFFFF;
+  --surface-raised: #F1F5F9;
+  --surface-overlay: rgba(255, 255, 255, 0.9);
+  --text: #0F172A;
+  --text-secondary: #475569;
+  --muted: #64748B;
+  --border: #E2E8F0;
+  --border-subtle: #EDF2F7;
+  --border-focus: #4F46E5;
+
+  --accent: #4F46E5;
+  --accent-hover: #4338CA;
+  --accent-light: #EEF2FF;
+  --accent-glow: rgba(79, 70, 229, 0.2);
+  --error: #DC2626;
+  --error-bg: #FEF2F2;
+  --error-border: #FCA5A5;
+  --warning: #D97706;
+  --warning-bg: #FFFBEB;
+  --warning-border: #FCD34D;
+  --success: #16A34A;
+  --success-bg: #F0FDF4;
+  --success-border: #86EFAC;
+
+  /* Node State Colors (Light Theme) */
+  --state-normal-bg: #FFFFFF;
+  --state-normal-border: #CBD5E1;
+  --state-normal-text: #0F172A;
+
+  --state-compare-bg: #FEF08A;
+  --state-compare-border: #CA8A04;
+  --state-compare-badge: #854D0E;
+
+  --state-outer-bg: #BAE6FD;
+  --state-outer-border: #0284C7;
+  --state-outer-badge: #0369A1;
+
+  --state-created-bg: #BBF7D0;
+  --state-created-border: #16A34A;
+  --state-created-badge: #15803D;
+
+  --state-visited-bg: #F1F5F9;
+  --state-visited-border: #94A3B8;
+  --state-visited-text: #94A3B8;
+
+  --state-zero-bg: #FECACA;
+  --state-zero-border: #DC2626;
+  --state-zero-badge: #B91C1C;
+
+  --state-lifted-bg: #E9D5FF;
+  --state-lifted-border: #9333EA;
+  --state-lifted-badge: #7E22CE;
+
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
+  --shadow-md: 0 6px 16px -2px rgba(0, 0, 0, 0.08), 0 2px 6px -1px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 14px 28px -4px rgba(0, 0, 0, 0.1), 0 4px 10px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Explicit Dark Theme Selector */
+[data-theme="dark"] {
+  --bg: #090D16;
+  --bg-gradient: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(99, 102, 241, 0.18), transparent 70%), #090D16;
+  --surface: rgba(17, 24, 39, 0.82);
+  --surface-raised: rgba(30, 41, 59, 0.75);
+  --surface-overlay: rgba(9, 13, 22, 0.88);
+  --text: #F8FAFC;
+  --text-secondary: #CBD5E1;
+  --muted: #94A3B8;
+  --border: rgba(255, 255, 255, 0.10);
+  --border-subtle: rgba(255, 255, 255, 0.05);
+  --border-focus: #818CF8;
+
+  --accent: #6366F1;
+  --accent-hover: #4F46E5;
+  --accent-light: rgba(99, 102, 241, 0.16);
+  --accent-glow: rgba(99, 102, 241, 0.35);
+  --error: #EF4444;
+  --error-bg: rgba(239, 68, 68, 0.15);
+  --error-border: rgba(239, 68, 68, 0.4);
+  --warning: #F59E0B;
+  --warning-bg: rgba(245, 158, 11, 0.15);
+  --warning-border: rgba(245, 158, 11, 0.4);
+  --success: #10B981;
+  --success-bg: rgba(16, 185, 129, 0.15);
+  --success-border: rgba(16, 185, 129, 0.4);
+
+  --state-normal-bg: #131B2A;
+  --state-normal-border: #2D3D54;
+  --state-normal-text: #F8FAFC;
+
+  --state-compare-bg: rgba(245, 158, 11, 0.18);
+  --state-compare-border: #F59E0B;
+  --state-compare-badge: #FEF08A;
+
+  --state-outer-bg: rgba(56, 189, 248, 0.18);
+  --state-outer-border: #38BDF8;
+  --state-outer-badge: #BAE6FD;
+
+  --state-created-bg: rgba(16, 185, 129, 0.2);
+  --state-created-border: #10B981;
+  --state-created-badge: #A7F3D0;
+
+  --state-visited-bg: rgba(15, 23, 42, 0.5);
+  --state-visited-border: #334155;
+  --state-visited-text: #64748B;
+
+  --state-zero-bg: rgba(239, 68, 68, 0.2);
+  --state-zero-border: #EF4444;
+  --state-zero-badge: #FECACA;
+
+  --state-lifted-bg: rgba(168, 85, 247, 0.25);
+  --state-lifted-border: #A855F7;
+  --state-lifted-badge: #F3E8FF;
+
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 8px 24px -4px rgba(0, 0, 0, 0.5), 0 2px 8px -2px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 16px 40px -6px rgba(0, 0, 0, 0.65), 0 4px 14px -2px rgba(0, 0, 0, 0.4);
+}
